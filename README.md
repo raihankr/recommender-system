@@ -3,20 +3,13 @@
 
 ## Project Overview
 
-Sistem rekomendasi telah menjadi salah satu alat penting untuk mempermudah pengambilan keputusan, khususnya dalam dunia digital yang dipenuhi dengan informasi dan pilihan. Dalam sebuah artikel oleh Robin Burke, dkk (2011), sistem rekomendasi dijelaskan sebagai "sebuah sistem yang menyajikan rekomendasi yang dipersonalisasi sebagai output atau mempunyai efek untuk mengarahkan pengguna secara dipersonalisasi kepada objek yang menarik atau berguna dalam posibilitas opsi yang luas."¹
+Sistem rekomendasi telah menjadi salah satu alat penting untuk mempermudah pengambilan keputusan, khususnya dalam dunia digital yang dipenuhi dengan informasi dan pilihan. Dalam sebuah artikel oleh Robin Burke, dkk (2011), sistem rekomendasi dijelaskan sebagai "sebuah sistem yang menyajikan rekomendasi yang dipersonalisasi sebagai output atau mempunyai efek untuk mengarahkan pengguna secara dipersonalisasi kepada objek yang menarik atau berguna dalam posibilitas opsi yang luas."
 
 Dalam bidang pemasaran, sistem rekomendasi digunakan untuk merekomendasikan produk yang mungkin menarik atau berguna untuk pengguna dari sekian banyak opsi produk yang ada. Dewasa ini, produk ponsel menjadi salah satu jenis produk dengan opsi yang paling banyak seiring dengan berkembangnya teknologi. Dalam hal ini, kebutuhan akan sistem rekomendasi menjadi semakin meningkat untuk dapat menyajikan pilihan produk ponsel yang menarik bagi pengguna.
 
 Dalam projek ini saya akan membuat sebuah sistem rekomendasi untuk produk ponsel. Dataset yang digunakan bernama "Cellphones Recommendations" yang diambil dari situs Kaggle. Dataset berisi data spesifikasi produk ponsel paling populer Amerika pada tahun 2022 dan data penilaian berdasarkan survei beserta data pengguna atau partisipan pada survei tersebut.
 
-¹ [Burke, Robin, Alexander Felfernig, and Mehmet H. Göker. "Recommender systems: An overview." Ai Magazine 32.3 (2011): 13-18.](https://ojs.aaai.org/aimagazine/index.php/aimagazine/article/view/2361/2231)
-²
-
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Jelaskan mengapa proyek ini penting untuk diselesaikan.
-- Menyertakan hasil riset terkait atau referensi. Referensi yang diberikan harus berasal dari sumber yang kredibel dan author yang jelas.
-  
-  Format Referensi: [Judul Referensi](https://scholar.google.com/) 
+* [Burke, Robin, Alexander Felfernig, and Mehmet H. Göker. "Recommender systems: An overview." Ai Magazine 32.3 (2011): 13-18.](https://ojs.aaai.org/aimagazine/index.php/aimagazine/article/view/2361/2231)
 
 ## Business Understanding
 
@@ -24,25 +17,17 @@ Melimpahnya opsi produk ponsel dalam pasar khususnya *e-commerce* seringkali men
 
 ### Problem Statements
 
-Menjelaskan pernyataan masalah:
-- Bagaimana 
-- Pernyataan Masalah 2
-- Pernyataan Masalah n
+- Bagaimana mendapatkan rekomendasi produk pada kondisi data interaksi pengguna yang sedikit (*cold start problem*)?
+- Bagaimana memanfaatkan penilaian pengguna untuk menyajikan rekomendasi terhadap pengguna lain?
 
 ### Goals
 
-Menjelaskan tujuan proyek yang menjawab pernyataan masalah:
-- Jawaban pernyataan masalah 1
-- Jawaban pernyataan masalah 2
-- Jawaban pernyataan masalah n
+- Mendapatkan *Top N Recommendation* dari produk pada kondisi *cold start problem*
+- Menyajikan *Top N Recommendation* untuk seorang pengguna dengan menganalisis pola penilaian produk pada pengguna lain.
 
-Semua poin di atas harus diuraikan dengan jelas. Anda bebas menuliskan berapa pernyataan masalah dan juga goals yang diinginkan.
-
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Menambahkan bagian “Solution Approach” yang menguraikan cara untuk meraih goals. Bagian ini dibuat dengan ketentuan sebagai berikut: 
-
-    ### Solution statements
-    - Mengajukan 2 atau lebih solution approach (algoritma atau pendekatan sistem rekomendasi).
+### Solution statements
+- Menggunakan pendekatan *Content-Based Filtering* dengan algoritma K-Nearest Neighbors untuk mendapatkan *Top N Recommendation* berdasarkan kemiripan setiap produk tanpa membutuhkan interaksi pengguna yang ideal untuk kondisi *cold start problem*.
+- Menggunakan pendekatan *Collaborative Filtering* dengan algoritma Singular Value Decomposition yang akan memanfaatkan data penilaian pengguna untuk menyajikan *Top N Recommendation* dengan memprediksi penilaian pengguna terhadap seluruh produk.
 
 ## Data Understanding
 
@@ -118,32 +103,111 @@ Data pengguna memiliki 99 entri seperti ditunjukkan di atas, dengan 50 di antara
 
 Pada tahap *univariate analysis* data penilaian, ditemukan sebuah penilaian yang melebihi batas maksimum skala yaitu 10. Pada tahap ini saya akan mengonversi penilaian tersebut menjadi pada batas maksimum yaitu 10. Hal ini bertujuan untuk menjaga konsistensi pada skala data.
 
-## Mengekstraksi Tahun Rilis menjadi Fitur Baru
+### Mengekstraksi Tahun Rilis menjadi Fitur Baru
 
 ![image](https://github.com/user-attachments/assets/1472671a-5fe9-4d7f-b421-975f7d0b011b)
 
 Pada tahap ini saya mengekstraksi nilai tahun dari tanggal rilis untuk mempermudah model mengklasifikasikan ponsel berdasarkan tahun rilis untuk skema *content-based filtering*.
 
+### Normalisasi Fitur Numerik
+
+![image](https://github.com/user-attachments/assets/fea76f70-b6fb-46bc-bc84-646cac1c5996)
+
+Pada tahap ini kita melakukan normalisasi untuk fitur numerik pada dataset ponsel. Metode yang digunakan adalah Min-Max Scaler yang akan menormalisasi data menjadi data dalam rentang 0 hingga 1 berdasarkan nilai terendah dan tertinggi. Proses ini dapat dengan mudah dilakukan dengan bantuan kelas `MinMaxScaler` dari *library* `sklearn`. Proses normalisasi cukup penting untuk membuat nilai fitur menjadi seragam. Proses ini berguna untuk fitur-fitur yang akan digunakan pada skema content-based filtering.
+
+### *Encoding* Fitur Kategorikal
+
+Pada tahap ini fitur-fitur kategorikal akan diubah menjadi sebuah matriks dengan metode One Hot Encoding sehingga setiap kategori akan dibuat kolomnya masing-masing. *Library* `sklearn` menyediakan Kelas `OneHotEncoding` untuk dapat mengatasi proses ini secara efisien dan efektif. Proses ini berguna supaya data kategorikal dapat diolah oleh model.
+
+Setelah menormalisasi fitur numerikal dan *encoding* fitur kategorikal, selanjutnya adalah menggabungkan kedua fitur tersebut ke dalam satu array sebelum akhirnya siap digunakan untuk pelatihan pada skema *content-based filtering*.
+
 ![image](https://github.com/user-attachments/assets/2b94c8a1-2ab9-4467-bf94-6e8d129e2e2d)
 
+## Membagi Data Pelatihan dan Validasi
+
+Dataset dibagi menjadi dua bagian, pelatihan dan validasi. Pembagian ini berguna untuk mencegah *overfitting* dan membuat model dapat memprediksi nilai yang tidak terlihat.
 
 ## Modeling
-Tahapan ini membahas mengenai model sisten rekomendasi yang Anda buat untuk menyelesaikan permasalahan. Sajikan top-N recommendation sebagai output.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menyajikan dua solusi rekomendasi dengan algoritma yang berbeda.
-- Menjelaskan kelebihan dan kekurangan dari solusi/pendekatan yang dipilih.
+### *Content-Based Filtering*
+
+Pada pendekatan ini, saya menggunakan algoritma K Nearest Neighbors. Algoritma ini akan mengukur jarak setiap sampel dengan metrik *cosine similarity* dan mengambil sebanyak *k* sampel yang terdekat dengan algoritma *brute-force search*.
+
+#### Kelebihan
+1. Mudah untuk diimplementasikan.
+2. Efektif untuk dataset ukuran kecil hingga sedang.
+3. Tidak membutuhkan pelatihan secara eksplisit.
+
+#### Kekurangan
+1. Berat secara komputasi untuk dataset yang besar.
+2. Membutuhkan banyak memori karena harus menyimpan keseluruhan dataset.
+3. Performa dapat menurun untuk data yang tersebar.
+
+Keluaran *Top N Recommendation* yang dihasilkan oleh model adalah sebagai berikut:
+
+![image](https://github.com/user-attachments/assets/b866f319-f008-4281-bc5c-efd2649e5f3b)
+
+### Collaborative Filtering
+
+Pada pendekatan Collaborative Filtering, saya menggunakan algoritma Singular Value Decomposition. Algoritma ini akan mencari laten faktor (penilaian) dengan mendekomposisi matriks *user-item*. Hal ini memungkinkan untuk memperkirakan matriks yang asli berdasarkan representasi matriks yang memiliki dimensi lebih rendah.
+
+#### Kelebihan
+1. Pengurangan dimensi dan kompleksitas untuk *user-item* matriks sehingga mudah untuk diinterpretasikan dan dianalisis
+2. Menemukan laten faktor dan pola tersembunyi pada preferensi pengguna, memungkinkan rekomendasi yang lebih dipersonalisasi.
+3. Dapat mengatasi dataset besar secara efektif
+
+#### Kekurangan
+1. Matriks *user-item* seringkali tersebar sehingga mempengaruhi kualitas data.
+2. Kurang efektif terhadap data yang sedikit; *Cold start problem*
+3. Mengonsumsi banyak memori terutama terhadap dataset yang besar.
+
+Keluaran *Top N Recommendation* yang dihasilkan oleh model adalah sebagai berikut:
+
+![image](https://github.com/user-attachments/assets/f58d5a4c-5260-49e5-85af-909dec3604fc)
 
 ## Evaluation
-Pada bagian ini Anda perlu menyebutkan metrik evaluasi yang digunakan. Kemudian, jelaskan hasil proyek berdasarkan metrik evaluasi tersebut.
 
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
+Evaluasi untuk kedua model dilakukan dengan metrik yang berbeda. Untuk skema *content-based filtering*, saya menggunakan metrik Mean Absolute Error dan Mean Average Precision. Sementara, untuk skema *collaborative filtering*, saya menggunakan metrik Mean Absolute Error saja.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
+* **Mean Absolute Error** akan menghitung nilai absolut dari rerata nilai *error* dari seluruh prediksi. Rumus dari metrik ini ditunjukkan pada gambar di bawah:
 
-**---Ini adalah bagian akhir laporan---**
+![image](https://github.com/user-attachments/assets/a79dcce4-fce1-4087-8680-7c6533b27f6d)
 
-_Catatan:_
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
+
+Keterangan:  
+```
+    n = jumlah data  
+    xᵢ = nilai data yang sebenarnya  
+    x = nilai data yang diprediksi
+```
+
+* **Mean Average Precision** menghitung rerata dari seluruh presisi dari keseluruhan dokumen. Secara umum, rumus dari metrik ini ditunjukkan pada gambar di bawah:
+
+![image](https://github.com/user-attachments/assets/0e4215d3-aafb-42b0-bf42-fcebbd319396)
+
+
+Keterangan:
+```
+    k = jumlah kelas
+    AP = presisi rata-rata
+```
+
+### Evaluasi Content-Based Filtering
+
+Dalam skema *content-based filtering* performa dan relevansi hasil rekomendasi diukur berdasarkan kecocokan setiap fitur pada rekomendasi dengan fitur pada barang target. Saya menggunakan Mean Absolute Error (MAE) dan Mean Average Precision (mAP) karena dalam model menggunakan fitur numerik yang performanya diukur dengan MAE, dan fitur kategorikal yang performanya diukur dengan mAP.
+
+Metrik mAP diukur dengan terlebih dahulu menghitung presisi untuk rekomendasi top N. Selanjutnya, saya mengukur nilai Average Precision@3 (AP@3), yang berarti merata-ratakan nilai presisi pada rekomendasi top 1 hingga rekomendasi top 3 untuk satu user. Nilai Average Precision kemudian dihitung untuk semua user lalu dirata-ratakan sehingga menghasilkan nilai mAP.
+
+Hasil evaluasi:
+
+![image](https://github.com/user-attachments/assets/2fa01a15-8ae5-4f62-93ee-3f548b8ea3da)
+
+Hasil evaluasi di atas menunjukkan bahwa model *content-based filtering* memiliki performa yang baik ditunjukkan dengan nilai MAE yang cukup kecil, yaitu sebesar 0.16. Nilai MAE diambil dari fitur numerik yang sudah dinormalisasi dalam rentang 0 hingga 1. Artinya, kecocokan fitur numerik prediksi dengan target memiliki kesalahan sekitar 16%. Sementara itu, nilai mAP menunjukkan hasil yang tinggi yakni sebesar 0.92 atau 92% ketepatan untuk fitur kategorikalnya.
+
+### Evaluasi Collaborative Filtering
+
+Hasil evaluasi:
+
+![image](https://github.com/user-attachments/assets/a6bba458-4df8-4c5e-b216-60bbe1713957)
+
+Pada skema ini, saya kembali menggunakan metrik MAE untuk menghitung seberapa tepat model dalam memprediksi penilaian untuk pasangan pengguna-item. Hasil di atas menunjukkan bawah model memiliki nilai MAE sebesar sekitar 1.68 dari nilai-nilai prediksi dalam rentang 0 hingga 10. Ini menunjukkan bahwa model memiliki tingkat kesalahan sebesar ssekitar 16.8% dalam memprediksi penilaian atau *rating* dari pengguna.
