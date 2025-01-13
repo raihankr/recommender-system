@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Sistem rekomendasi telah menjadi salah satu alat penting untuk mempermudah pengambilan keputusan, khususnya dalam dunia digital yang dipenuhi dengan informasi dan pilihan. Dalam bidang literatur, pembaca tak jarang dihadapkan dengan situasi bingung dalam memilih buku apa yang sebaikan mereka baca selanjutnya, di antara ribuan buku yang tersedia dengan berbagai genre. Sistem rekomendasi buku menjadi elemen penting untuk membantu pembaca menemukan buku yang relevan berdasarkan preferensi pribadi, riwayat bacaan, dan/atau ulasan dari pengguna lain.
+Sistem rekomendasi telah menjadi salah satu alat penting untuk mempermudah pengambilan keputusan, khususnya dalam dunia digital yang dipenuhi dengan informasi dan pilihan. Menurut Robin Burke, dkk. (2011), Sistem rekomendasi 
 
 Dataset Book-Crossing adalah salah satu dataset terbesar dan terlengkap untuk pembangunan model sistem rekomendasi buku. Dataset ini berisi informasi pengguna, buku, dan ulasan dalam bentuk penilaian implisit maupun eksplisit. Dataset ini merupakan hasil *scrapping* data dari situs web "Book-Crossing". Dengan data ini, proyek akan mengeksplorasi pendekatan *collaborative filtering* dan *content-based filtering* untuk menghasilkan rekomendasi yang personal dan relevan.
 
